@@ -1,0 +1,7 @@
+.gallery { margin-top: 2.5rem; padding: 1rem 0 }
+.gallery h3 { margin: 0 0 0.6rem 0 }
+.gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px }
+.gallery-item { height: 140px; background-size: cover; background-position: center; border-radius: 10px; box-shadow: 0 10px 30px rgba(2,6,23,0.5); transform: translateY(30px); opacity: 0; transition: transform 600ms cubic-bezier(.2,.9,.2,1), opacity 600ms ease }
+.gallery.in-view .gallery-item { transform: translateY(0); opacity: 1 }
+@media (max-width: 900px) { .gallery-grid { grid-template-columns: repeat(2, 1fr) } }
+@media (max-width: 480px) { .gallery-grid { grid-template-columns: 1fr } .gallery-item { height: 120px } }
