@@ -29,7 +29,6 @@ export default function Bookings() {
     const eDate = new Date(newEnd)
     if (eDate <= s) return setError('End date must be after start')
 
-    // check conflicts with other bookings for same room
     const all = JSON.parse(localStorage.getItem('bookings') || '[]')
     const conflicts = all.filter(x => x.roomId === b.roomId && x.id !== b.id && (new Date(x.start) <= eDate && new Date(x.end) >= s))
     if (conflicts.length) return setError('New end date conflicts with another booking')
@@ -48,32 +47,103 @@ export default function Bookings() {
     <div>
       <h2 className="fade-up">My Bookings</h2>
       {bookings.length === 0 ? (
-        <p>No bookings yet.</p>
+        <div className="card" style={{ textAlign: 'center', padding: '3rem 2rem', marginTop: '2rem' }}>
+          <p style={{ fontSize: '1.1rem', margin: '0' }}>No bookings yet.</p>
+          <p style={{ color: 'var(--muted)', margin: '0.5rem 0 0 0' }}>Start by booking a room from the home page</p>
+        </div>
       ) : (
-        <div style={{display:'grid', gap:12, marginTop:12}}>
+        <div style={{ display:'grid', gap: '1.5rem', marginTop: '2rem' }}>
           {bookings.map(b => (
-            <div key={b.id} className="card fade-up" style={{padding:12, display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+            <div
+              key={b.id}
+              className="card fade-up"
+              style={{
+                padding: '1.5rem',
+                display: 'grid',
+                gridTemplateColumns: '1fr auto',
+                gap: '2rem',
+                alignItems: 'start',
+              }}
+            >
               <div>
-                <div style={{fontWeight:700}}>Room {b.roomId}</div>
-                <div className="muted">{new Date(b.start).toLocaleDateString()} → {new Date(b.end).toLocaleDateString()} ({b.days} days)</div>
-                <div className="muted">Facilities: {(b.facilities || []).join(', ') || '—'}</div>
-              </div>
-              <div style={{textAlign:'right'}}>
-                <div style={{fontWeight:700}}>${b.total || 0}</div>
-                {editing === b.id ? (
-                  <div style={{marginTop:8}}>
-                    <input type="date" value={newEnd} onChange={e => setNewEnd(e.target.value)} />
-                    <div style={{display:'flex', gap:8, marginTop:8}}>
-                      <button className="btn small" onClick={() => handleSave(b)}>Save</button>
-                      <button className="btn small" onClick={() => setEditing(null)}>Cancel</button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+                  <div style={{ fontSize: '2rem' }}>🏨</div>
+                  <div>
+                    <div style={{ fontWeight: '700', fontSize: '1.2rem', color: '#e8f0fe' }}>Room {b.roomId}</div>
+                    <div style={{ color: 'var(--muted)', fontSize: '0.9rem', marginTop: '0.25rem' }}>
+                      {new Date(b.start).toLocaleDateString()} → {new Date(b.end).toLocaleDateString()}
                     </div>
-                    {error && <div className="error">{error}</div>}
+                  </div>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', margin: '1rem 0' }}>
+                  <div style={{ padding: '0.75rem', background: 'rgba(124,58,237,0.05)', borderRadius: '6px' }}>
+                    <div style={{ color: 'var(--muted)', fontSize: '0.85rem', marginBottom: '0.25rem' }}>Duration</div>
+                    <div style={{ color: '#06b6d4', fontWeight: '600' }}>{b.days} nights</div>
+                  </div>
+                  <div style={{ padding: '0.75rem', background: 'rgba(124,58,237,0.05)', borderRadius: '6px' }}>
+                    <div style={{ color: 'var(--muted)', fontSize: '0.85rem', marginBottom: '0.25rem' }}>Total</div>
+                    <div style={{ color: '#7c3aed', fontWeight: '600' }}>${b.total || 0}</div>
+                  </div>
+                  <div style={{ padding: '0.75rem', background: 'rgba(16,185,129,0.05)', borderRadius: '6px' }}>
+                    <div style={{ color: 'var(--muted)', fontSize: '0.85rem', marginBottom: '0.25rem' }}>Status</div>
+                    <div style={{ color: 'var(--success)', fontWeight: '600' }}>Active</div>
+                  </div>
+                </div>
+                {(b.facilities || []).length > 0 && (
+                  <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                    <div style={{ color: 'var(--muted)', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Facilities:</div>
+                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                      {(b.facilities || []).map(f => (
+                        <span key={f} style={{ padding: '0.35rem 0.75rem', background: 'rgba(124,58,237,0.1)', border: '1px solid rgba(124,58,237,0.2)', borderRadius: '6px', fontSize: '0.85rem' }}>
+                          {f}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', width: '180px' }}>
+                {editing === b.id ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    <input
+                      type="date"
+                      value={newEnd}
+                      onChange={e => setNewEnd(e.target.value)}
+                      style={{ padding: '0.65rem' }}
+                    />
+                    <button
+                      className="btn small"
+                      onClick={() => handleSave(b)}
+                      style={{ width: '100%' }}
+                    >
+                      Save
+                    </button>
+                    <button
+                      className="btn small secondary"
+                      onClick={() => setEditing(null)}
+                      style={{ width: '100%' }}
+                    >
+                      Cancel
+                    </button>
+                    {error && <div style={{ color: 'var(--danger)', fontSize: '0.85rem', textAlign: 'center' }}>{error}</div>}
                   </div>
                 ) : (
-                  <div style={{display:'flex', gap:8, marginTop:8}}>
-                    <button className="btn small" onClick={() => handleExtend(b)}>Extend</button>
-                    <button className="btn small" onClick={() => handleCancel(b.id)}>Cancel</button>
-                  </div>
+                  <>
+                    <button
+                      className="btn small"
+                      onClick={() => handleExtend(b)}
+                      style={{ width: '100%' }}
+                    >
+                      Extend
+                    </button>
+                    <button
+                      className="btn small secondary"
+                      onClick={() => handleCancel(b.id)}
+                      style={{ width: '100%' }}
+                    >
+                      Cancel
+                    </button>
+                  </>
                 )}
               </div>
             </div>
