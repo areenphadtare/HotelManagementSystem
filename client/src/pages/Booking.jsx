@@ -63,42 +63,107 @@ export default function Booking() {
     <div>
       <h2 className="fade-up">Book Room</h2>
       {room ? (
-        <div className="room-detail card fade-up" style={{marginTop:12}}>
-          <h3>{room.name}</h3>
-          <p className="muted">Price: ${room.price} / night</p>
-          <form onSubmit={handleSubmit} className="booking-form" style={{display:'grid', gap:10, marginTop:8}}>
-            <label>Start date</label>
-            <input type="date" value={start} onChange={e => setStart(e.target.value)} required />
-            <label>End date</label>
-            <input type="date" value={end} onChange={e => setEnd(e.target.value)} required />
+        <div className="card fade-up" style={{ marginTop: '2rem', maxWidth: '600px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
+            <div style={{ fontSize: '2.5rem' }}>🏨</div>
+            <div>
+              <h3 style={{ margin: '0', fontSize: '1.5rem', color: '#e8f0fe' }}>{room.name}</h3>
+              <p style={{ margin: '0.25rem 0 0 0', color: 'var(--muted)' }}>Price: ${room.price} / night</p>
+            </div>
+          </div>
 
-            <fieldset style={{border:'none', padding:0}}>
-              <legend>Facilities</legend>
-              <div style={{display:'flex', gap:8, flexWrap:'wrap'}}>
-                {room.facilities.map(f => (
-                  <label key={f} style={{display:'inline-flex', alignItems:'center', gap:6, background:'rgba(255,255,255,0.02)', padding:'0.35rem 0.5rem', borderRadius:8}}>
-                    <input type="checkbox" checked={selectedFacilities.includes(f)} onChange={() => handleFacilityToggle(f)} /> <span className="muted">{f}</span>
-                  </label>
-                ))}
+          <form onSubmit={handleSubmit} className="booking-form" style={{ display: 'grid', gap: '1.5rem', marginTop: '1.5rem' }}>
+            {/* Date Selection */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div>
+                <label style={{ fontWeight: '600', color: '#7c3aed', marginBottom: '0.5rem', display: 'block' }}>Check-in</label>
+                <input type="date" value={start} onChange={e => setStart(e.target.value)} required style={{ width: '100%' }} />
               </div>
-            </fieldset>
+              <div>
+                <label style={{ fontWeight: '600', color: '#7c3aed', marginBottom: '0.5rem', display: 'block' }}>Check-out</label>
+                <input type="date" value={end} onChange={e => setEnd(e.target.value)} required style={{ width: '100%' }} />
+              </div>
+            </div>
 
+            {/* Facilities */}
+            {room.facilities && room.facilities.length > 0 && (
+              <fieldset style={{ border: 'none', padding: '1rem', background: 'rgba(124,58,237,0.05)', borderRadius: '8px', margin: '0' }}>
+                <legend style={{ fontWeight: '600', color: '#7c3aed', marginBottom: '1rem', cursor: 'pointer' }}>✓ Add Facilities</legend>
+                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                  {room.facilities.map(f => (
+                    <label
+                      key={f}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        padding: '0.5rem 0.75rem',
+                        background: selectedFacilities.includes(f) ? 'rgba(124,58,237,0.15)' : 'transparent',
+                        border: selectedFacilities.includes(f) ? '1.5px solid #7c3aed' : '1px solid rgba(255,255,255,0.1)',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        transition: 'all 200ms ease',
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedFacilities.includes(f)}
+                        onChange={() => handleFacilityToggle(f)}
+                        style={{ cursor: 'pointer' }}
+                      />
+                      <span className="muted">{f}</span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            )}
+
+            {/* Price Summary */}
             {start && end && (() => {
               const s = new Date(start)
               const eDate = new Date(end)
-              const days = Math.max(0, Math.ceil((eDate - s) / (1000*60*60*24)))
-              return <p>Total: <strong>${room.price * days}</strong> ({days} nights)</p>
+              const days = Math.max(0, Math.ceil((eDate - s) / (1000 * 60 * 60 * 24)))
+              const total = room.price * days
+              return (
+                <div style={{
+                  padding: '1rem',
+                  background: 'linear-gradient(135deg, rgba(124,58,237,0.08), rgba(6,182,212,0.04))',
+                  border: '1px solid rgba(124,58,237,0.2)',
+                  borderRadius: '8px',
+                }}
+                >
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                    <div>
+                      <div style={{ color: 'var(--muted)', fontSize: '0.9rem', marginBottom: '0.25rem' }}>Nights</div>
+                      <div style={{ color: '#06b6d4', fontWeight: '700', fontSize: '1.2rem' }}>{days}</div>
+                    </div>
+                    <div>
+                      <div style={{ color: 'var(--muted)', fontSize: '0.9rem', marginBottom: '0.25rem' }}>Per Night</div>
+                      <div style={{ color: 'var(--muted)', fontWeight: '600' }}>${room.price}</div>
+                    </div>
+                  </div>
+                  <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '1rem', paddingTop: '1rem' }}>
+                    <div style={{ color: 'var(--muted)', fontSize: '0.9rem', marginBottom: '0.25rem' }}>Total</div>
+                    <div style={{ color: '#7c3aed', fontWeight: '700', fontSize: '1.4rem' }}>${total}</div>
+                  </div>
+                </div>
+              )
             })()}
 
-            {error && <p className="error">{error}</p>}
-            <div style={{display:'flex', gap:8}}>
-              <button className="btn" type="submit">Confirm Booking</button>
+            {/* Error Message */}
+            {error && <p style={{ color: 'var(--danger)', fontWeight: '500', margin: '0' }}>❌ {error}</p>}
+
+            {/* Action Buttons */}
+            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+              <button className="btn" type="submit" style={{ flex: 1 }}>Confirm Booking</button>
               <button type="button" className="btn secondary" onClick={() => window.history.back()}>Back</button>
             </div>
           </form>
         </div>
       ) : (
-        <p>Select a room from <a href="/app">Home</a>.</p>
+        <div className="card" style={{ padding: '2rem', textAlign: 'center', marginTop: '2rem' }}>
+          <p>Select a room from <a href="/app" style={{ color: '#7c3aed', fontWeight: '600' }}>Home</a>.</p>
+        </div>
       )}
     </div>
   )
