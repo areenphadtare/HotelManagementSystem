@@ -62,6 +62,26 @@ export default function App() {
           <Route path="bookings" element={<Bookings />} />
         </Route>
 
+        {/* Admin Dashboard */}
+        <Route
+          path="/app/admin"
+          element={
+            <AdminRoute>
+              <Admin />
+            </AdminRoute>
+          }
+        />
+
+        {/* User Dashboard */}
+        <Route
+          path="/app/dashboard"
+          element={
+            <UserRoute>
+              <Dashboard />
+            </UserRoute>
+          }
+        />
+
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" />} />
 
