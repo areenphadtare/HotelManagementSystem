@@ -13,6 +13,7 @@ import Admin from './pages/Admin'
 import Dashboard from './pages/Dashboard'
 import './App.css'
 
+// Protected Route Wrapper
 function RequireAuth({ children }) {
   const { user, loading } = useAuth()
   if (loading) return <div>Loading...</div>
@@ -40,38 +41,30 @@ export default function App() {
   return (
     <AuthProvider>
       <Routes>
+
+        {/* Public Routes */}
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+
+        {/* Protected App Routes */}
         <Route
           path="/app"
-          element={<RequireAuth><AppMain /></RequireAuth>}
+          element={
+            <RequireAuth>
+              <AppMain />
+            </RequireAuth>
+          }
         >
           <Route index element={<Home />} />
           <Route path="housekeeping" element={<Housekeeping />} />
           <Route path="booking" element={<Booking />} />
           <Route path="bookings" element={<Bookings />} />
         </Route>
-        
-        <Route
-          path="/app/admin"
-          element={
-            <AdminRoute>
-              <Admin />
-            </AdminRoute>
-          }
-        />
-        
-        <Route
-          path="/app/dashboard"
-          element={
-            <UserRoute>
-              <Dashboard />
-            </UserRoute>
-          }
-        />
-        
+
+        {/* Fallback */}
         <Route path="*" element={<Navigate to="/" />} />
+
       </Routes>
     </AuthProvider>
   )
