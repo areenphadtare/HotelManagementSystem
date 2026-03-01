@@ -63,12 +63,26 @@ export default function Booking() {
     <div>
       <h2 className="fade-up">Book Room</h2>
       {room ? (
-        <div className="card fade-up" style={{ marginTop: '2rem', maxWidth: '600px' }}>
+        <div className="card fade-up" style={{ marginTop: '2rem', maxWidth: '700px' }}>
+          {/* Room Image */}
+          {room.image && (
+            <div
+              style={{
+                width: '100%',
+                height: '300px',
+                backgroundImage: `url(${room.image})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                borderRadius: '8px 8px 0 0',
+                marginBottom: '1.5rem',
+              }}
+            />
+          )}
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
             <div style={{ fontSize: '2.5rem' }}>🏨</div>
             <div>
               <h3 style={{ margin: '0', fontSize: '1.5rem', color: '#e8f0fe' }}>{room.name}</h3>
-              <p style={{ margin: '0.25rem 0 0 0', color: 'var(--muted)' }}>Price: ${room.price} / night</p>
+              <p style={{ margin: '0.25rem 0 0 0', color: 'var(--muted)' }}>Price: ₹{room.price} / night</p>
             </div>
           </div>
 
@@ -139,12 +153,12 @@ export default function Booking() {
                     </div>
                     <div>
                       <div style={{ color: 'var(--muted)', fontSize: '0.9rem', marginBottom: '0.25rem' }}>Per Night</div>
-                      <div style={{ color: 'var(--muted)', fontWeight: '600' }}>${room.price}</div>
+                      <div style={{ color: 'var(--muted)', fontWeight: '600' }}>₹{room.price}</div>
                     </div>
                   </div>
                   <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '1rem', paddingTop: '1rem' }}>
                     <div style={{ color: 'var(--muted)', fontSize: '0.9rem', marginBottom: '0.25rem' }}>Total</div>
-                    <div style={{ color: '#7c3aed', fontWeight: '700', fontSize: '1.4rem' }}>${total}</div>
+                    <div style={{ color: '#7c3aed', fontWeight: '700', fontSize: '1.4rem' }}>₹{total}</div>
                   </div>
                 </div>
               )

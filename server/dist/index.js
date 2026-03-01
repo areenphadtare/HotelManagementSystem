@@ -12,8 +12,8 @@ const rooms_1 = __importDefault(require("./routes/rooms"));
 const bookings_1 = __importDefault(require("./routes/bookings"));
 const reviews_1 = __importDefault(require("./routes/reviews"));
 dotenv_1.default.config();
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/hoteldev';
-const PORT = Number(process.env.PORT || 4000);
+const MONGO_URI = process.env.MONGO_URI || 'mongo://127.0.0.1:27017/hoteldev';
+const PORT = Number(process.env.PORT || 4000);1
 async function main() {
     try {
         await mongoose_1.default.connect(MONGO_URI);

@@ -12,7 +12,11 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     const res = await login({ email, password })
-    if (res.ok) navigate('/app')
+    if (res.ok) {
+      // Redirect based on role
+      const redirectPath = res.user?.role === 'admin' ? '/app/admin' : '/app/dashboard'
+      navigate(redirectPath)
+    }
     else setError(res.message)
   }
 

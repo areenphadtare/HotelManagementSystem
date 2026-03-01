@@ -9,12 +9,31 @@ import Home from './pages/Home'
 import Housekeeping from './pages/Housekeeping'
 import Booking from './pages/Booking'
 import Bookings from './pages/Bookings'
+import Admin from './pages/Admin'
+import Dashboard from './pages/Dashboard'
 import './App.css'
 
 // Protected Route Wrapper
 function RequireAuth({ children }) {
-  const { user } = useAuth()
+  const { user, loading } = useAuth()
+  if (loading) return <div>Loading...</div>
   if (!user) return <Navigate to="/login" replace />
+  return children
+}
+
+function AdminRoute({ children }) {
+  const { user, loading, isAdmin } = useAuth()
+  if (loading) return <div>Loading...</div>
+  if (!user) return <Navigate to="/login" replace />
+  if (!isAdmin) return <Navigate to="/app/dashboard" replace />
+  return children
+}
+
+function UserRoute({ children }) {
+  const { user, loading, isAdmin } = useAuth()
+  if (loading) return <div>Loading...</div>
+  if (!user) return <Navigate to="/login" replace />
+  if (isAdmin) return <Navigate to="/app/admin" replace />
   return children
 }
 
@@ -42,6 +61,26 @@ export default function App() {
           <Route path="booking" element={<Booking />} />
           <Route path="bookings" element={<Bookings />} />
         </Route>
+
+        {/* Admin Dashboard */}
+        <Route
+          path="/app/admin"
+          element={
+            <AdminRoute>
+              <Admin />
+            </AdminRoute>
+          }
+        />
+
+        {/* User Dashboard */}
+        <Route
+          path="/app/dashboard"
+          element={
+            <UserRoute>
+              <Dashboard />
+            </UserRoute>
+          }
+        />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" />} />
