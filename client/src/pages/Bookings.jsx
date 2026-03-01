@@ -53,23 +53,38 @@ export default function Bookings() {
         </div>
       ) : (
         <div style={{ display:'grid', gap: '1.5rem', marginTop: '2rem' }}>
-          {bookings.map(b => (
+          {bookings.map(b => {
+            const roomData = JSON.parse(localStorage.getItem('rooms') || '[]').find(r => r.id === b.roomId)
+            return (
             <div
               key={b.id}
               className="card fade-up"
               style={{
                 padding: '1.5rem',
                 display: 'grid',
-                gridTemplateColumns: '1fr auto',
+                gridTemplateColumns: '250px 1fr auto',
                 gap: '2rem',
                 alignItems: 'start',
               }}
             >
+              {/* Room Image */}
+              {roomData?.image && (
+                <div
+                  style={{
+                    width: '250px',
+                    height: '180px',
+                    backgroundImage: `url(${roomData.image})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    borderRadius: '8px',
+                  }}
+                />
+              )}
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
                   <div style={{ fontSize: '2rem' }}>🏨</div>
                   <div>
-                    <div style={{ fontWeight: '700', fontSize: '1.2rem', color: '#e8f0fe' }}>Room {b.roomId}</div>
+                    <div style={{ fontWeight: '700', fontSize: '1.2rem', color: '#e8f0fe' }}>{roomData?.name || `Room ${b.roomId}`}</div>
                     <div style={{ color: 'var(--muted)', fontSize: '0.9rem', marginTop: '0.25rem' }}>
                       {new Date(b.start).toLocaleDateString()} → {new Date(b.end).toLocaleDateString()}
                     </div>
@@ -82,7 +97,7 @@ export default function Bookings() {
                   </div>
                   <div style={{ padding: '0.75rem', background: 'rgba(124,58,237,0.05)', borderRadius: '6px' }}>
                     <div style={{ color: 'var(--muted)', fontSize: '0.85rem', marginBottom: '0.25rem' }}>Total</div>
-                    <div style={{ color: '#7c3aed', fontWeight: '600' }}>${b.total || 0}</div>
+                    <div style={{ color: '#7c3aed', fontWeight: '600' }}>₹{b.total || 0}</div>
                   </div>
                   <div style={{ padding: '0.75rem', background: 'rgba(16,185,129,0.05)', borderRadius: '6px' }}>
                     <div style={{ color: 'var(--muted)', fontSize: '0.85rem', marginBottom: '0.25rem' }}>Status</div>
@@ -147,7 +162,8 @@ export default function Bookings() {
                 )}
               </div>
             </div>
-          ))}
+            )
+          })}
         </div>
       )}
     </div>

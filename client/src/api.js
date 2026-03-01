@@ -5,9 +5,9 @@ export async function seedSampleData() {
   const rooms = JSON.parse(localStorage.getItem('rooms') || 'null')
   if (rooms) return
   const sample = [
-    { id: 'r1', name: 'Standard Room', capacity: 2, facilities: ['wifi', 'ac'], price: 50, image: 'https://images.unsplash.com/photo-1560440770-69b1b82a0d9f?w=1000&q=60&auto=format&fit=crop' },
-    { id: 'r2', name: 'Deluxe Room', capacity: 3, facilities: ['wifi', 'ac', 'tv'], price: 90, image: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=1000&q=60&auto=format&fit=crop' },
-    { id: 'r3', name: 'Suite', capacity: 5, facilities: ['wifi', 'ac', 'tv', 'minibar'], price: 150, image: 'https://images.unsplash.com/photo-1501117716987-c8e5e6a58b0a?w=1000&q=60&auto=format&fit=crop' },
+    { id: 'r1', name: 'Standard Room', capacity: 2, facilities: ['wifi', 'ac'], price: 5000, image: 'https://images.unsplash.com/photo-1560440770-69b1b82a0d9f?w=1000&q=60&auto=format&fit=crop' },
+    { id: 'r2', name: 'Deluxe Room', capacity: 3, facilities: ['wifi', 'ac', 'tv'], price: 8000, image: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=1000&q=60&auto=format&fit=crop' },
+    { id: 'r3', name: 'Suite', capacity: 5, facilities: ['wifi', 'ac', 'tv', 'minibar'], price: 15000, image: 'https://images.unsplash.com/photo-1501117716987-c8e5e6a58b0a?w=1000&q=60&auto=format&fit=crop' },
   ]
   localStorage.setItem('rooms', JSON.stringify(sample))
   localStorage.setItem('bookings', JSON.stringify([]))

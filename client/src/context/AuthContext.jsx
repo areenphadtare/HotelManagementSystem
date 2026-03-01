@@ -4,10 +4,12 @@ const AuthContext = createContext()
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const u = localStorage.getItem('authUser')
     if (u) setUser(JSON.parse(u))
+    setLoading(false)
   }, [])
 
   const login = async ({ email, password }) => {
@@ -21,10 +23,10 @@ export function AuthProvider({ children }) {
     return { ok: false, message: 'Invalid credentials' }
   }
 
-  const signup = async ({ name, email, password }) => {
+  const signup = async ({ name, email, password, role = 'user' }) => {
     const users = JSON.parse(localStorage.getItem('users') || '[]')
     if (users.find((u) => u.email === email)) return { ok: false, message: 'Email already exists' }
-    const newUser = { id: Date.now().toString(), name, email, password }
+    const newUser = { id: Date.now().toString(), name, email, password, role }
     users.push(newUser)
     localStorage.setItem('users', JSON.stringify(users))
     localStorage.setItem('authUser', JSON.stringify(newUser))
@@ -37,7 +39,9 @@ export function AuthProvider({ children }) {
     setUser(null)
   }
 
-  return <AuthContext.Provider value={{ user, login, signup, logout }}>{children}</AuthContext.Provider>
+  const isAdmin = user?.role === 'admin'
+
+  return <AuthContext.Provider value={{ user, login, signup, logout, loading, isAdmin }}>{children}</AuthContext.Provider>
 }
 
 export const useAuth = () => useContext(AuthContext)
