@@ -11,6 +11,7 @@ import Booking from './pages/Booking'
 import Bookings from './pages/Bookings'
 import Admin from './pages/Admin'
 import Dashboard from './pages/Dashboard'
+// Authentication endpoints
 import './App.css'
 
 // Protected Route Wrapper

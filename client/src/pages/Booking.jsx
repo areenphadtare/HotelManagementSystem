@@ -55,8 +55,12 @@ export default function Booking() {
       createdAt: new Date().toISOString()
     }
 
-    await createBooking(booking)
-    navigate('/app/bookings')
+    try {
+      await createBooking(booking)
+      navigate('/app/bookings')
+    } catch (err) {
+      setError(err.message || 'Booking failed')
+    }
   }
 
   return (

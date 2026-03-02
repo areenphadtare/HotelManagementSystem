@@ -4,9 +4,11 @@ import { getRooms } from '../api'
 
 export default function Home() {
   const [rooms, setRooms] = useState([])
+  const [loaded, setLoaded] = useState(false)
   useEffect(() => { (async () => {
     const r = await getRooms()
     setRooms(r)
+    setLoaded(true)
   })() }, [])
 
   return (
@@ -67,9 +69,14 @@ export default function Home() {
           </div>
         ))}
       </div>
-      {rooms.length === 0 && (
+      {!loaded && (
         <div className="card" style={{ padding: '3rem', textAlign: 'center', marginTop: '2rem' }}>
           <p style={{ color: 'var(--muted)', fontSize: '1.05rem' }}>Loading rooms...</p>
+        </div>
+      )}
+      {loaded && rooms.length === 0 && (
+        <div className="card" style={{ padding: '3rem', textAlign: 'center', marginTop: '2rem' }}>
+          <p style={{ color: 'var(--muted)', fontSize: '1.05rem' }}>No rooms available.</p>
         </div>
       )}
     </div>

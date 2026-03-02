@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
+  <rect width="100%" height="100%" fill="#f8fafc"/>
+  <rect x="40" y="40" width="720" height="420" rx="12" fill="#f1f5f9" stroke="#e2e8f0"/>
+  <text x="60" y="120" font-family="Arial, Helvetica, sans-serif" font-size="42" fill="#0f172a">Standard Room</text>
+  <text x="60" y="180" font-family="Arial" font-size="18" fill="#475569">2 Guests • Wi‑Fi • AC</text>
+  <rect x="520" y="90" width="200" height="120" rx="8" fill="#c7d2fe"/>
+</svg>

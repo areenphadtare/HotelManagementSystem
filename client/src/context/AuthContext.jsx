@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
+import { register as apiRegister, login as apiLogin, setAuthToken, getAuthToken } from '../api'
 
 const AuthContext = createContext()
 
@@ -6,36 +7,49 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
+  // initialize from localStorage/token
   useEffect(() => {
-    const u = localStorage.getItem('authUser')
-    if (u) setUser(JSON.parse(u))
+    const storedUser = localStorage.getItem('authUser')
+    const token = getAuthToken()
+    if (storedUser && token) {
+      setUser(JSON.parse(storedUser))
+      setAuthToken(token)
+    }
     setLoading(false)
   }, [])
 
   const login = async ({ email, password }) => {
-    const users = JSON.parse(localStorage.getItem('users') || '[]')
-    const found = users.find((u) => u.email === email && u.password === password)
-    if (found) {
-      localStorage.setItem('authUser', JSON.stringify(found))
-      setUser(found)
-      return { ok: true, user: found }
+    try {
+      const res = await apiLogin(email, password)
+      // apiLogin sets token internally
+      if (res.user) {
+        setUser(res.user)
+        localStorage.setItem('authUser', JSON.stringify(res.user))
+        return { ok: true, user: res.user }
+      }
+      return { ok: false, message: 'Login failed' }
+    } catch (err) {
+      return { ok: false, message: err.message }
     }
-    return { ok: false, message: 'Invalid credentials' }
   }
 
   const signup = async ({ name, email, password, role = 'user' }) => {
-    const users = JSON.parse(localStorage.getItem('users') || '[]')
-    if (users.find((u) => u.email === email)) return { ok: false, message: 'Email already exists' }
-    const newUser = { id: Date.now().toString(), name, email, password, role }
-    users.push(newUser)
-    localStorage.setItem('users', JSON.stringify(users))
-    localStorage.setItem('authUser', JSON.stringify(newUser))
-    setUser(newUser)
-    return { ok: true, user: newUser }
+    try {
+      const res = await apiRegister(name, email, password, role)
+      if (res.user) {
+        setUser(res.user)
+        localStorage.setItem('authUser', JSON.stringify(res.user))
+        return { ok: true, user: res.user }
+      }
+      return { ok: false, message: 'Signup failed' }
+    } catch (err) {
+      return { ok: false, message: err.message }
+    }
   }
 
   const logout = () => {
     localStorage.removeItem('authUser')
+    localStorage.removeItem('authToken')
     setUser(null)
   }
 

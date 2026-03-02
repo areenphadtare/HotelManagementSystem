@@ -16,7 +16,7 @@ export default function Signup() {
     const res = await signup({ name, email, password, role })
     if (res.ok) {
       // Redirect based on role
-      navigate(role === 'admin' ? '/app/admin' : '/app/dashboard')
+      navigate(role === 'admin' ? '/app/admin' : '/app')
     }
     else setError(res.message)
   }

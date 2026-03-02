@@ -14,7 +14,7 @@ export default function Login() {
     const res = await login({ email, password })
     if (res.ok) {
       // Redirect based on role
-      const redirectPath = res.user?.role === 'admin' ? '/app/admin' : '/app/dashboard'
+      const redirectPath = res.user?.role === 'admin' ? '/app/admin' : '/app'
       navigate(redirectPath)
     }
     else setError(res.message)
