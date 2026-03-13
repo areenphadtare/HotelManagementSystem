@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
-import { useNavigate } from 'react-router-dom'
-import { getRooms, getUserBookings, createBooking, cancelBooking } from '../api'
+import { Link, useNavigate } from 'react-router-dom'
+import { getRooms, getUserBookings, cancelBooking } from '../api'
 import './Dashboard.css'
 
 export default function Dashboard() {
@@ -11,10 +11,24 @@ export default function Dashboard() {
   const [userBookings, setUserBookings] = useState([])
   const [checkInDate, setCheckInDate] = useState('')
   const [checkOutDate, setCheckOutDate] = useState('')
-  const [selectedRoom, setSelectedRoom] = useState(null)
   const [availableRooms, setAvailableRooms] = useState([])
-  const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
+
+  const normalizeRoom = (room) => ({
+    ...room,
+    id: room.id || room._id || room._id?.toString()
+  })
+
+  const loadData = async () => {
+    try {
+      const roomData = (await getRooms()).map(normalizeRoom)
+      const bookingData = await getUserBookings(user?.id)
+      setRooms(roomData)
+      setUserBookings(bookingData)
+    } catch (err) {
+      console.error('Error loading data:', err)
+    }
+  }
 
   useEffect(() => {
     if (isAdmin) {
@@ -24,16 +38,14 @@ export default function Dashboard() {
     loadData()
   }, [isAdmin, navigate, user?.id])
 
-  const loadData = async () => {
-    try {
-      const roomData = await getRooms()
-      const bookingData = await getUserBookings(user?.id)
-      setRooms(roomData)
-      setUserBookings(bookingData)
-    } catch (err) {
-      console.error('Error loading data:', err)
-    }
-  }
+  const today = new Date()
+  const tomorrow = new Date(today)
+  tomorrow.setDate(tomorrow.getDate() + 1)
+
+  const defaultStartDate = today.toISOString().split('T')[0]
+  const defaultEndDate = tomorrow.toISOString().split('T')[0]
+  const startDate = checkInDate || defaultStartDate
+  const endDate = checkOutDate || defaultEndDate
 
   const checkAvailability = () => {
     if (!checkInDate || !checkOutDate) {
@@ -50,7 +62,8 @@ export default function Dashboard() {
     }
 
     const available = rooms.filter((room) => {
-      const roomBookings = userBookings.filter((b) => b.roomId === room.id)
+      const roomId = room.id || (room._id && room._id.toString())
+      const roomBookings = userBookings.filter((b) => String(b.roomId) === String(roomId))
       const hasConflict = roomBookings.some((b) => {
         const bStart = new Date(b.start)
         const bEnd = new Date(b.end)
@@ -61,45 +74,6 @@ export default function Dashboard() {
 
     setAvailableRooms(available)
     setMessage('')
-  }
-
-  const handleBookRoom = async (roomId) => {
-    if (!checkInDate || !checkOutDate) {
-      setMessage('Please select check-in and check-out dates')
-      return
-    }
-
-    setLoading(true)
-    try {
-      const room = rooms.find((r) => r.id === roomId)
-      const checkIn = new Date(checkInDate)
-      const checkOut = new Date(checkOutDate)
-      const days = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24))
-      const total = days * room.price
-
-      const booking = {
-        id: Date.now().toString(),
-        roomId,
-        userId: user?.id,
-        start: checkInDate,
-        end: checkOutDate,
-        days,
-        total,
-        facilities: room.facilities || []
-      }
-
-      await createBooking(booking)
-      setMessage(`✓ Room booked successfully! Total: ₹${total}`)
-      loadData()
-      setCheckInDate('')
-      setCheckOutDate('')
-      setSelectedRoom(null)
-      setAvailableRooms([])
-    } catch (err) {
-      setMessage('Error booking room: ' + err.message)
-    } finally {
-      setLoading(false)
-    }
   }
 
   const handleCancelBooking = async (bookingId) => {
@@ -163,8 +137,9 @@ export default function Dashboard() {
                     (new Date(checkOutDate) - new Date(checkInDate)) / (1000 * 60 * 60 * 24)
                   )
                   const total = days * room.price
+                  const roomId = room.id || (room._id && room._id.toString())
                   return (
-                    <div key={room.id} className="room-item" style={{ display: 'flex', gap: '1.5rem', overflow: 'hidden' }}>
+                    <div key={roomId} className="room-item" style={{ display: 'flex', gap: '1.5rem', overflow: 'hidden' }}>
                       {room.image && (
                         <div
                           style={{
@@ -191,12 +166,12 @@ export default function Dashboard() {
                         </p>
                       </div>
                       <button
-                        onClick={() => handleBookRoom(room.id)}
-                        disabled={loading}
+                        type="button"
                         className="book-btn"
                         style={{ alignSelf: 'center', height: 'fit-content' }}
+                        onClick={() => navigate(`/app/booking?roomId=${roomId}&start=${encodeURIComponent(startDate)}&end=${encodeURIComponent(endDate)}`)}
                       >
-                        {loading ? 'Booking...' : 'Book Now'}
+                        Book Now
                       </button>
                     </div>
                   )
