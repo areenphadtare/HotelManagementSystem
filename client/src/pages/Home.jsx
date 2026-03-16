@@ -1,13 +1,22 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { getRooms } from '../api'
+import { useAuth } from '../context/AuthContext'
 
 export default function Home() {
+  const { user } = useAuth()
+  const navigate = useNavigate()
   const [rooms, setRooms] = useState([])
   const [loaded, setLoaded] = useState(false)
+
+  const handleBookNow = () => {
+    console.log('Home: Book Now clicked', { user })
+    if (!user) return navigate('/login')
+    navigate('/app/dashboard')
+  }
   useEffect(() => { (async () => {
     const r = await getRooms()
-    setRooms(r)
+    setRooms(r.map((room) => ({ ...room, id: room.id || room._id || room._id?.toString() })))
     setLoaded(true)
   })() }, [])
 
@@ -57,13 +66,14 @@ export default function Home() {
                   <span style={{ color: 'var(--muted)', fontSize: '0.85rem' }}>Starting from</span>
                   <div style={{ fontSize: '1.5rem', fontWeight: '700', color: 'var(--accent-2)' }}>₹{room.price}<span style={{ fontSize: '0.85rem', color: 'var(--muted)' }}>/night</span></div>
                 </div>
-                <Link
-                  to={`/app/booking?roomId=${room.id}`}
+                <button
+                  type="button"
                   className="btn small"
                   style={{ padding: '0.6rem 1rem' }}
+                  onClick={handleBookNow}
                 >
                   Book Now
-                </Link>
+                </button>
               </div>
             </div>
           </div>

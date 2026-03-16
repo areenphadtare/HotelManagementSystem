@@ -6,19 +6,38 @@ import { useAuth } from '../context/AuthContext'
 export default function Booking() {
   const [searchParams] = useSearchParams()
   const roomId = searchParams.get('roomId')
+  const startParam = searchParams.get('start')
+  const endParam = searchParams.get('end')
+
   const [room, setRoom] = useState(null)
-  const [start, setStart] = useState('')
-  const [end, setEnd] = useState('')
+
+  const today = new Date()
+  const tomorrow = new Date(today)
+  tomorrow.setDate(tomorrow.getDate() + 1)
+
+  const [start, setStart] = useState(startParam || today.toISOString().split('T')[0])
+  const [end, setEnd] = useState(endParam || tomorrow.toISOString().split('T')[0])
   const [selectedFacilities, setSelectedFacilities] = useState([])
   const [error, setError] = useState(null)
   const { user } = useAuth()
   const navigate = useNavigate()
 
+  useEffect(() => {
+    if (startParam) setStart(startParam)
+    if (endParam) setEnd(endParam)
+  }, [startParam, endParam])
+
+  const normalizeRoom = (room) => ({
+    ...room,
+    id: room.id || room._id || (room._id && room._id.toString && room._id.toString())
+  })
+
   useEffect(() => { (async () => {
     if (roomId) {
       const r = await getRoomById(roomId)
-      setRoom(r)
-      setSelectedFacilities(r?.facilities || [])
+      const normalized = normalizeRoom(r || {})
+      setRoom(normalized)
+      setSelectedFacilities(normalized?.facilities || [])
     }
   })() }, [roomId])
 
@@ -140,7 +159,7 @@ export default function Booking() {
             {start && end && (() => {
               const s = new Date(start)
               const eDate = new Date(end)
-              const days = Math.max(0, Math.ceil((eDate - s) / (1000 * 60 * 60 * 24)))
+              const days = Math.max(1, Math.ceil((eDate - s) / (1000 * 60 * 60 * 24)))
               const total = room.price * days
               return (
                 <div style={{
@@ -168,12 +187,41 @@ export default function Booking() {
               )
             })()}
 
+            {/* Update confirm button to include total */}
+            {start && end && (() => {
+              const s = new Date(start)
+              const eDate = new Date(end)
+              const days = Math.max(1, Math.ceil((eDate - s) / (1000 * 60 * 60 * 24)))
+              const total = room.price * days
+              return (
+                <div style={{ color: 'var(--muted)', fontSize: '0.9rem', marginTop: '0.5rem' }}>
+                  Total price for selected dates: <strong>₹{total}</strong>
+                </div>
+              )
+            })()}
+
             {/* Error Message */}
             {error && <p style={{ color: 'var(--danger)', fontWeight: '500', margin: '0' }}>❌ {error}</p>}
 
             {/* Action Buttons */}
             <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-              <button className="btn" type="submit" style={{ flex: 1 }}>Confirm Booking</button>
+              <button
+                className="btn"
+                type="submit"
+                style={{ flex: 1 }}
+              >
+                {start && end ? (
+                  (() => {
+                    const s = new Date(start)
+                    const eDate = new Date(end)
+                    const days = Math.max(1, Math.ceil((eDate - s) / (1000 * 60 * 60 * 24)))
+                    const total = room.price * days
+                    return `Confirm Booking - ₹${total}`
+                  })()
+                ) : (
+                  'Confirm Booking'
+                )}
+              </button>
               <button type="button" className="btn secondary" onClick={() => window.history.back()}>Back</button>
             </div>
           </form>

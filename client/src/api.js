@@ -197,16 +197,11 @@ export async function updateBooking(bookingId, updates) {
   return bookings[idx]
 }
 
-export async function getUserBookings() {
-  const token = getAuthToken()
-  const res = await fetch(`${API_URL}/bookings/me`, {
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  })
-  if (!res.ok) throw new Error('Failed to fetch bookings')
-  return res.json()
+export async function getUserBookings(userId) {
+  // Try to fetch bookings from the server, but fall back to local storage when offline.
+  const all = await getBookings()
+  if (!userId) return all
+  return Array.isArray(all) ? all.filter((b) => b.userId === userId) : []
 }
 
 // Backward-compatible getBookings: try server (user-specific if logged in), else localStorage
