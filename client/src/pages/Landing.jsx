@@ -15,22 +15,23 @@ export default function Landing() {
     <div className="landing container fade-up">
       <div className="hero">
         <div className="copy">
-          <h1>Welcome to Hotel Management</h1>
-          <p>Book rooms, leave reviews, manage stays, and track facilities — safe and simple.</p>
+          <div className="badge">ELEVATE YOUR STAY</div>
+          <h1>Experience Unrivaled Luxury</h1>
+          <p>Immerse yourself in comfort, elegant design, and exceptional service. Book your perfect getaway today.</p>
           <div className="landing-actions">
-            <Link to="/signup" className="btn">Get Started</Link>
+            <Link to="/signup" className="btn">Reserve Now</Link>
             <Link to="/login" className="btn btn-secondary">Sign In</Link>
           </div>
         </div>
         <div className="visual">
-          <div className="hero-card float">
-            <div className="hero-image" />
-            <div style={{paddingLeft:12}}>
-              <h3 style={{margin:0}}>Deluxe Suite</h3>
-              <p style={{marginTop:6, color:'var(--muted)'}}>Spacious room with top facilities — wifi, AC, TV and minibar.</p>
-              <div style={{marginTop:8}}>
+          <div className="hero-card float glass-panel">
+            <div className="hero-image" style={{backgroundImage: "url('https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800&q=80')"}} />
+            <div className="hero-card-content">
+              <h3>Presidential Suite</h3>
+              <p className="muted">Panoramic city views, private hot tub, and personalized butler service.</p>
+              <div className="hero-card-actions">
                 <button className="btn small" onClick={handleExplore} aria-label="Explore rooms">Explore</button>
-                <button className="btn secondary small" style={{marginLeft:8}} onClick={() => navigate('/app')}>View all rooms</button>
+                <div className="price-tag">$450<span>/night</span></div>
               </div>
             </div>
           </div>
